@@ -25,12 +25,13 @@ public static class MasterGrid
         return res;
     }
 
-    public static GameObject AddCube(int x, int y, int z, GameObject cubePrefab){
+    public static GameObject AddCube(int x, int y, int z, CubeColor color, GameObject cubePrefab){
         GameObject newCube = null;
 
         if(GetCube(x,y,z) == null){
             newCube = GameObject.Instantiate(cubePrefab, Vector3.zero, Quaternion.identity);
             newCube.GetComponent<CubeController>().SetStartPosition(x,y,z);
+            newCube.GetComponent<CubeController>().SetColor(color);
             masterGrid.Add(GetMapKey(x,y,z), newCube);
         }
 
