@@ -60,6 +60,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: b8242236a72eac848b66ab631f8c2927, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -99,6 +100,8 @@ MonoBehaviour:
   redMaterial: {fileID: 2100000, guid: b8242236a72eac848b66ab631f8c2927, type: 2}
   greenMaterial: {fileID: 2100000, guid: 9578f22f61fc84540817016e0acccd64, type: 2}
   blueMaterial: {fileID: 2100000, guid: ec9345de1af98d14cba033ac3ac7ba85, type: 2}
+  selectedMaterial: {fileID: 2100000, guid: a1f46fcca80cda04ca2ebca6ff46302f, type: 2}
+  moveAnimationTime: 0.2
 --- !u!65 &37839507949771569
 BoxCollider:
   m_ObjectHideFlags: 0
