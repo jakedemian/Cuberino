@@ -130,6 +130,14 @@ public class GameController : MonoBehaviour
                 // update grid position of two moved blocks
                 MasterGrid.UpdateTwoCubePositions(cube1, cube2);
 
+
+
+
+                // TODO NEEDS TO BE A LOOP
+                // while there are still chains {
+                //
+
+
                 // check for any cube deletions
                 List<GameObject> cubeChain1 = MasterGrid.GetColorChain(cube1);
                 List<GameObject> cubeChain2 = MasterGrid.GetColorChain(cube2);
@@ -166,9 +174,15 @@ public class GameController : MonoBehaviour
                         int cubesBelow = MasterGrid.GetCubesBelow(cube);
                         cube.GetComponent<CubeController>().UpdateGridY(cubesBelow);
                         cube.GetComponent<CubeController>().SetFalling();
+
+                        // TODO update position in grid as well
                     }
 
                 }
+
+                //
+                // } end of chain loop
+                //
             } else if (!anyBlockIsMoving) {
                 inputLocked = false;
             }
