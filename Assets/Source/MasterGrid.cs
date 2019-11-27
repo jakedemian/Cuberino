@@ -12,27 +12,27 @@ public static class MasterGrid
 
     public static void Clean() {
         Dictionary<string, GameObject> cleanGrid = new Dictionary<string, GameObject>();
-
         foreach(var cube in masterGrid) {
-            Debug.Log(cube.Value);
             if(cube.Value != null) {
                 cleanGrid.Add(cube.Key, cube.Value);
             }
         }
-        Debug.Log(cleanGrid.Count);
 
         masterGrid = cleanGrid;
     }
 
-    private static string GetMapKey(int x, int y, int z){
+    private static string GetMapKey(int x, int y, int z) {
         return x.ToString() + "," + y.ToString() + "," + z.ToString();
+    }
+
+    private static string GetMapKey(Vector3Int pos) {
+        return pos.x.ToString() + "," + pos.y.ToString() + "," + pos.z.ToString();
     }
 
     private static Vector3 MapKeyToVector(string key) {
         Vector3 res = Vector3.zero;
 
         string[] points = key.Split(',');
-        Debug.Log(points);
 
         res = new Vector3(int.Parse(points[0]), int.Parse(points[1]), int.Parse(points[2]));
 
@@ -102,11 +102,33 @@ public static class MasterGrid
         return cubesBelow;
     }
 
-    public static void UpdateTwoCubePositions(GameObject cube1, GameObject cube2) {
+    public static void UpdateCubePosition(GameObject cube1, Vector3Int newPos) {
+        var physicalPos = cube1.transform.position;
+        var gridPos = cube1.GetComponent<CubeController>().GetGridPosition();
+
+        Dictionary<string, GameObject> masterGridCopy = new Dictionary<string, GameObject>();
+        foreach (var cube in masterGrid) {
+            if (cube.Value.GetInstanceID() != cube1.GetInstanceID()) {
+                masterGridCopy.Add(cube.Key, cube.Value);
+            }
+        }
+
+        // now just hand over the new cube position
+        masterGridCopy.Add(GetMapKey(newPos), cube1);
+        masterGrid = masterGridCopy;
+
+        Debug.Log(physicalPos);
+        Debug.Log(gridPos);
+    }
+
+    public static void UpdateSelectedCubePositions(GameObject cube1, GameObject cube2) {
+        // NOTE: we can't just call UpdateCubePosition twice, since these need to be deleted at the same exact time
         Dictionary<string, GameObject> masterGridCopy = new Dictionary<string, GameObject>();
         // remove them
-        foreach(var cube in masterGrid) {
-            if(cube.Value.GetInstanceID() != cube1.GetInstanceID() && cube.Value.GetInstanceID() != cube2.GetInstanceID()) {
+        foreach (var cube in masterGrid) {
+            if (cube.Value.GetInstanceID() != cube1.GetInstanceID()
+                && cube.Value.GetInstanceID() != cube2.GetInstanceID())
+            {
                 masterGridCopy.Add(cube.Key, cube.Value);
             }
         }
@@ -118,6 +140,10 @@ public static class MasterGrid
         masterGridCopy.Add(GetMapKey(c1pos.x, c1pos.y, c1pos.z), cube1);
         masterGridCopy.Add(GetMapKey(c2pos.x, c2pos.y, c2pos.z), cube2);
 
+        // relay this change back to each cube
+        cube1.GetComponent<CubeController>().UpdateGridPositionFromMasterGrid(c1pos.x, c1pos.y, c1pos.z);
+        cube2.GetComponent<CubeController>().UpdateGridPositionFromMasterGrid(c2pos.x, c2pos.y, c2pos.z);
+
         masterGrid = masterGridCopy;
     }
 
@@ -127,7 +153,7 @@ public static class MasterGrid
         Vector3Int cube1GridPos = Vector3Int.RoundToInt(cube1.transform.position);
         Vector3Int cube2GridPos = Vector3Int.RoundToInt(cube2.transform.position);
 
-        if(Vector3Int.Distance(cube1GridPos, cube2GridPos) == 1) {
+        if(Mathf.Approximately(Vector3Int.Distance(cube1GridPos, cube2GridPos), 1f)) {
             adjacent = true;
         }
 

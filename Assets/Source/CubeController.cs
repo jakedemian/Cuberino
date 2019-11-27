@@ -4,9 +4,9 @@ using UnityEngine;
 
 
 public class CubeController : MonoBehaviour {
-    int gridX = 0;
-    int gridY = 0;
-    int gridZ = 0;
+    [SerializeField] int gridX = 0;
+    [SerializeField] int gridY = 0;
+    [SerializeField] int gridZ = 0;
     float currentFallSpeed = 0f;
     bool isFalling = true;
     bool isSelected = false;
@@ -28,6 +28,7 @@ public class CubeController : MonoBehaviour {
     public Material redMaterial;
     public Material greenMaterial;
     public Material blueMaterial;
+    public Material grayMaterial;
     public Material selectedMaterial;
 
     public float moveAnimationTime;
@@ -47,6 +48,8 @@ public class CubeController : MonoBehaviour {
             GetComponent<Renderer>().sharedMaterial = greenMaterial;
         } else if (color == CubeColor.Blue) {
             GetComponent<Renderer>().sharedMaterial = blueMaterial;
+        } else if(color == CubeColor.Gray) {
+            GetComponent<Renderer>().sharedMaterial = grayMaterial;
         }
     }
 
@@ -89,8 +92,29 @@ public class CubeController : MonoBehaviour {
         isFalling = true;
     }
 
+    public Vector3Int GetGridPosition() {
+        return new Vector3Int(gridX, gridY, gridZ);
+    }
+
+    public void UpdateGridPositionFromMasterGrid(int x, int y, int z) {
+        gridX = x;
+        gridY = y;
+        gridZ = z;
+    }
+
+    public void UpdateGridX(int x) {
+        gridX = x;
+        MasterGrid.UpdateCubePosition(gameObject, new Vector3Int(gridX, gridY, gridZ));
+    }
+
     public void UpdateGridY(int y) {
         gridY = y;
+        MasterGrid.UpdateCubePosition(gameObject, new Vector3Int(gridX, gridY, gridZ));
+    }
+
+    public void UpdateGridZ(int z) {
+        gridZ = z;
+        MasterGrid.UpdateCubePosition(gameObject, new Vector3Int(gridX, gridY, gridZ));
     }
 
     void Start(){

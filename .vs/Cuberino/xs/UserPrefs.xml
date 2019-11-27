@@ -1,0 +1,29 @@
+﻿<Properties StartupConfiguration="{6151F883-D962-2950-838D-D64E2ED0A047}|">
+  <MonoDevelop.Ide.Workbench>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Cuberino" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Source" expanded="True">
+                <Node name="MasterGrid.cs" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="ce472c5a-a184-4c67-bd3f-a60b974712a6" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/jake/Documents/Projects/Unity/Cuberino/Assets/Source/GameController.cs" relfile="Assets/Source/GameController.cs" line="164" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

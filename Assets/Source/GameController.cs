@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour
 
     private InputState inputState = InputState.Game;
     private List<GameObject> selectedCubes = new List<GameObject>();
+    private List<GameObject> lastMovedCubes = new List<GameObject>();
     private bool inputLocked = true;
 
 
@@ -52,8 +53,33 @@ public class GameController : MonoBehaviour
         cube.GetComponent<CubeController>().SetSelected(true);
     }
 
+    // TODO maybe make every cube manage its own moving state.  have a static list of gameObjects and when a cube is moving,
+    // it adds itself to that list and when it's done moving it removes itself.  then you can just check the list.Count
+    // to see if any blocks are moving
+    private bool AnyCubeIsMoving() {
+        // continually check if everything has stopped falling/moving
+        bool anyBlockIsMoving = false;
+        List<GameObject> allCubes = MasterGrid.GetAllCubes();
+
+        // check if any cubes are moving or falling
+        for (int i = 0; i < allCubes.Count; i++) {
+            if (allCubes[i] == null) {
+                continue;
+            }
+
+            CubeController cc = allCubes[i].GetComponent<CubeController>();
+            if (cc.isMovingOrFalling()) {
+                anyBlockIsMoving = true;
+                break;
+            }
+        }
+
+        return anyBlockIsMoving;
+    }
+
     private void StartMove() {
         inputLocked = true;
+
         Vector3 posA = selectedCubes[0].transform.position;
         Vector3 posB = selectedCubes[1].transform.position;
 
@@ -64,24 +90,111 @@ public class GameController : MonoBehaviour
         selectedCubes[1].GetComponent<CubeController>().SetSelected(false);
     }
 
-    void Start(){
-        MasterGrid.AddCube(0, 0, 0, CubeColor.Red, cubePrefab);
-        MasterGrid.AddCube(1, 0, 0, CubeColor.Blue, cubePrefab);
-        MasterGrid.AddCube(1, 0, 1, CubeColor.Blue, cubePrefab);
-        MasterGrid.AddCube(0, 1, 0, CubeColor.Blue, cubePrefab);
+    private void MoveCubesBack() {
+        inputLocked = true;
 
-        MasterGrid.AddCube(0, 1, 0, CubeColor.Red, cubePrefab);
-        MasterGrid.AddCube(1, 1, 0, CubeColor.Red, cubePrefab);
-        MasterGrid.AddCube(1, 1, 1, CubeColor.Green, cubePrefab);
-        MasterGrid.AddCube(0, 2, 0, CubeColor.Green, cubePrefab);
-
-        MasterGrid.AddCube(0, 2, 0, CubeColor.Green, cubePrefab);
-        MasterGrid.AddCube(1, 2, 0, CubeColor.Red, cubePrefab);
-        MasterGrid.AddCube(1, 2, 1, CubeColor.Blue, cubePrefab);
-        MasterGrid.AddCube(0, 3, 0, CubeColor.Green, cubePrefab);
+        lastMovedCubes[0].GetComponent<CubeController>().MoveBack();
+        lastMovedCubes[1].GetComponent<CubeController>().MoveBack();
     }
 
-    private void Update() {
+    private bool CubeChainShouldDelete(List<GameObject> cubeChain) {
+        return cubeChain.Count > 2;
+    }
+
+    private IEnumerator TriggerCubeDeletionChain(List<GameObject> cubesToTest, bool isFirstMove) {
+        //grab all of the cube chains we will be checking
+        List<List<GameObject>> cubeChains = new List<List<GameObject>>();
+        foreach (GameObject cube in cubesToTest) {
+
+            //if this cube is in an existing chain that we have, skip it.
+            bool cubeAlreadyInChain = false;
+            foreach(var chain in cubeChains) {
+                foreach(var c in chain) {
+                    if(c.GetInstanceID() == cube.GetInstanceID()){
+                        cubeAlreadyInChain = true;
+                        break;
+                    }
+                }
+                if (cubeAlreadyInChain) {
+                    break;
+                }
+            }
+            if (cubeAlreadyInChain) {
+                continue;
+            }
+
+            // add this unique cube chain
+            cubeChains.Add(MasterGrid.GetColorChain(cube));
+        }
+
+        Debug.Log(cubeChains.Count);
+
+        // delete the cubes in each chain that needs it
+        bool chainsWereDeleted = false;
+        foreach (List<GameObject> cubeChain in cubeChains) {
+            if (CubeChainShouldDelete(cubeChain)) {
+                chainsWereDeleted = true;
+                foreach (GameObject c in cubeChain) {
+                    // does this need a null check?
+                    DestroyImmediate(c.gameObject);
+                }
+            }
+        }
+        
+
+        // if any cubes were removed, we need to clean the grid of null values
+        // and update "floating" cubes to their new positions and make them fall.
+        if (chainsWereDeleted) {
+            MasterGrid.Clean();
+
+            int highestCubeYValue = 0;
+            foreach(var cube in MasterGrid.GetAllCubes()) {
+                if(cube.GetComponent<CubeController>().GetGridPosition().y > highestCubeYValue) {
+                    highestCubeYValue = cube.GetComponent<CubeController>().GetGridPosition().y;
+                }
+            }
+            // TODO should be able to start with 1 i think 0 height cubes should never be set to fall right?
+            for(int i = 1; i <= highestCubeYValue; i++) {
+                foreach(var cube in MasterGrid.GetAllCubes()) {
+                    if(cube.GetComponent<CubeController>().GetGridPosition().y == i) {
+
+                        int cubesBelow = MasterGrid.GetCubesBelow(cube);
+
+                        if (cube.GetComponent<CubeController>().GetGridPosition().y != cubesBelow) {
+                            cube.GetComponent<CubeController>().UpdateGridY(cubesBelow);
+                            cube.GetComponent<CubeController>().SetFalling();
+                        }
+                    }
+                }
+            }
+
+            yield return new WaitUntil(() => AnyCubeIsMoving() == false);
+            Debug.Log("freedom!");
+
+            // recursion!
+            TriggerCubeDeletionChain(MasterGrid.GetAllCubes(), false);
+        } else if (isFirstMove) {
+            MoveCubesBack();
+
+            yield return new WaitUntil(() => AnyCubeIsMoving() == false);
+
+            MasterGrid.UpdateSelectedCubePositions(lastMovedCubes[0], lastMovedCubes[1]);
+            lastMovedCubes = new List<GameObject>();
+        }
+    }
+
+    void Start(){
+        MasterGrid.AddCube(0, 0, 0, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(0, 0, 1, CubeColor.Gray, cubePrefab);
+
+        MasterGrid.AddCube(0, 1, 0, CubeColor.Blue, cubePrefab);
+        MasterGrid.AddCube(0, 1, 1, CubeColor.Green, cubePrefab);
+
+        MasterGrid.AddCube(0, 2, 0, CubeColor.Blue, cubePrefab);
+        MasterGrid.AddCube(0, 2, 1, CubeColor.Gray, cubePrefab);
+    }
+
+    void Update() {
         ManageInputState();
 
         if (!inputLocked) {
@@ -104,86 +217,17 @@ public class GameController : MonoBehaviour
             }
         }
         else {
-            // continually check if everything has stopped falling/moving
-            bool anyBlockIsMoving = false;
-            List<GameObject> allCubes = MasterGrid.GetAllCubes();
-
-            // check if any cubes are moving or falling
-            for (int i = 0; i < allCubes.Count; i++) {
-                if(allCubes[i] == null) {
-                    continue;
-                }
-
-                CubeController cc = allCubes[i].GetComponent<CubeController>();
-                if (cc.isMovingOrFalling()) {
-                    anyBlockIsMoving = true;
-                    break;
-                }
-            }
-
-            if (!anyBlockIsMoving && selectedCubes.Count > 0) {
+            if (!AnyCubeIsMoving() && selectedCubes.Count > 0) {
 
                 GameObject cube1 = selectedCubes[0];
                 GameObject cube2 = selectedCubes[1];
+                lastMovedCubes = selectedCubes;
                 selectedCubes = new List<GameObject>();
 
-                // update grid position of two moved blocks
-                MasterGrid.UpdateTwoCubePositions(cube1, cube2);
+                MasterGrid.UpdateSelectedCubePositions(cube1, cube2);
 
-
-
-
-                // TODO NEEDS TO BE A LOOP
-                // while there are still chains {
-                //
-
-
-                // check for any cube deletions
-                List<GameObject> cubeChain1 = MasterGrid.GetColorChain(cube1);
-                List<GameObject> cubeChain2 = MasterGrid.GetColorChain(cube2);
-
-                if(cubeChain1.Count > 2 || cubeChain2.Count > 2) {
-                    // delete the chains that are large enough and clear out selections
-
-                    if (cubeChain1.Count > 2) {
-                        foreach(var cube in cubeChain1) {
-                            DestroyImmediate(cube.gameObject);
-                        }
-                    }
-                    if(cubeChain2.Count > 2) {
-                        foreach (var cube in cubeChain2) {
-                            DestroyImmediate(cube.gameObject);
-                        }
-                    }
-
-                    // clear out deleted cubes
-                    MasterGrid.Clean();
-
-                    //
-                    //
-                    //
-                    // TODO NEED TO CHAIN THIS SOMEHOW!!!
-                    //
-                    //
-                    //
-
-                    // trigger block falling
-                    allCubes = MasterGrid.GetAllCubes();
-                    Debug.Log(allCubes.Count);
-                    foreach(var cube in allCubes) {
-                        int cubesBelow = MasterGrid.GetCubesBelow(cube);
-                        cube.GetComponent<CubeController>().UpdateGridY(cubesBelow);
-                        cube.GetComponent<CubeController>().SetFalling();
-
-                        // TODO update position in grid as well
-                    }
-
-                }
-
-                //
-                // } end of chain loop
-                //
-            } else if (!anyBlockIsMoving) {
+                StartCoroutine(TriggerCubeDeletionChain(new List<GameObject> { cube1, cube2 }, true));
+            } else if (!AnyCubeIsMoving()) {
                 inputLocked = false;
             }
         }
