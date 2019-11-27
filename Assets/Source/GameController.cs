@@ -140,7 +140,7 @@ public class GameController : MonoBehaviour
                 }
             }
         }
-        
+
 
         // if any cubes were removed, we need to clean the grid of null values
         // and update "floating" cubes to their new positions and make them fall.
@@ -172,7 +172,7 @@ public class GameController : MonoBehaviour
             Debug.Log("freedom!");
 
             // recursion!
-            TriggerCubeDeletionChain(MasterGrid.GetAllCubes(), false);
+            StartCoroutine(TriggerCubeDeletionChain(MasterGrid.GetAllCubes(), false));
         } else if (isFirstMove) {
             MoveCubesBack();
 
@@ -184,14 +184,37 @@ public class GameController : MonoBehaviour
     }
 
     void Start(){
-        MasterGrid.AddCube(0, 0, 0, CubeColor.Red, cubePrefab);
-        MasterGrid.AddCube(0, 0, 1, CubeColor.Gray, cubePrefab);
 
-        MasterGrid.AddCube(0, 1, 0, CubeColor.Blue, cubePrefab);
-        MasterGrid.AddCube(0, 1, 1, CubeColor.Green, cubePrefab);
+        MasterGrid.AddCube(0, 0, 0, CubeColor.Blue, cubePrefab);
+        MasterGrid.AddCube(0, 1, 0, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(0, 2, 0, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(0, 3, 0, CubeColor.Blue, cubePrefab);
+        MasterGrid.AddCube(1, 0, 0, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(2, 0, 0, CubeColor.Blue, cubePrefab);
+        MasterGrid.AddCube(3, 0, 0, CubeColor.Gray, cubePrefab);
+        MasterGrid.AddCube(4, 0, 0, CubeColor.Gray, cubePrefab);
+        MasterGrid.AddCube(2, 1, 0, CubeColor.Gray, cubePrefab);
 
-        MasterGrid.AddCube(0, 2, 0, CubeColor.Blue, cubePrefab);
-        MasterGrid.AddCube(0, 2, 1, CubeColor.Gray, cubePrefab);
+
+        // 5x3 test wall ////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////
+        //MasterGrid.AddCube(0, 0, 0, CubeColor.Red, cubePrefab);
+        //MasterGrid.AddCube(-1, 0, 0, CubeColor.Gray, cubePrefab);
+        //MasterGrid.AddCube(-2, 0, 0, CubeColor.Red, cubePrefab);
+        //MasterGrid.AddCube(1, 0, 0, CubeColor.Green, cubePrefab);
+        //MasterGrid.AddCube(2, 0, 0, CubeColor.Gray, cubePrefab);
+
+        //MasterGrid.AddCube(0, 1, 0, CubeColor.Blue, cubePrefab);
+        //MasterGrid.AddCube(-1, 1, 0, CubeColor.Blue, cubePrefab);
+        //MasterGrid.AddCube(-2, 1, 0, CubeColor.Red, cubePrefab);
+        //MasterGrid.AddCube(1, 1, 0, CubeColor.Gray, cubePrefab);
+        //MasterGrid.AddCube(2, 1, 0, CubeColor.Red, cubePrefab);
+
+        //MasterGrid.AddCube(0, 2, 0, CubeColor.Green, cubePrefab);
+        //MasterGrid.AddCube(-1, 2, 0, CubeColor.Red, cubePrefab);
+        //MasterGrid.AddCube(-2, 2, 0, CubeColor.Blue, cubePrefab);
+        //MasterGrid.AddCube(1, 2, 0, CubeColor.Green, cubePrefab);
+        //MasterGrid.AddCube(2, 2, 0, CubeColor.Red, cubePrefab);
     }
 
     void Update() {
