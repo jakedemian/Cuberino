@@ -90,6 +90,12 @@ public class GameController : MonoBehaviour
         selectedCubes[1].GetComponent<CubeController>().SetSelected(false);
     }
 
+    private void CancelSelectedCubes() {
+        selectedCubes[0].GetComponent<CubeController>().SetSelected(false);
+        selectedCubes[1].GetComponent<CubeController>().SetSelected(false);
+        selectedCubes = new List<GameObject>();
+    }
+
     private void MoveCubesBack() {
         inputLocked = true;
 
@@ -184,37 +190,32 @@ public class GameController : MonoBehaviour
     }
 
     void Start(){
-
-        MasterGrid.AddCube(0, 0, 0, CubeColor.Blue, cubePrefab);
-        MasterGrid.AddCube(0, 1, 0, CubeColor.Red, cubePrefab);
-        MasterGrid.AddCube(0, 2, 0, CubeColor.Red, cubePrefab);
-        MasterGrid.AddCube(0, 3, 0, CubeColor.Blue, cubePrefab);
-        MasterGrid.AddCube(1, 0, 0, CubeColor.Red, cubePrefab);
-        MasterGrid.AddCube(2, 0, 0, CubeColor.Blue, cubePrefab);
-        MasterGrid.AddCube(3, 0, 0, CubeColor.Gray, cubePrefab);
-        MasterGrid.AddCube(4, 0, 0, CubeColor.Gray, cubePrefab);
-        MasterGrid.AddCube(2, 1, 0, CubeColor.Gray, cubePrefab);
-
-
         // 5x3 test wall ////////////////////////////////////////////
         /////////////////////////////////////////////////////////////
-        //MasterGrid.AddCube(0, 0, 0, CubeColor.Red, cubePrefab);
-        //MasterGrid.AddCube(-1, 0, 0, CubeColor.Gray, cubePrefab);
-        //MasterGrid.AddCube(-2, 0, 0, CubeColor.Red, cubePrefab);
-        //MasterGrid.AddCube(1, 0, 0, CubeColor.Green, cubePrefab);
-        //MasterGrid.AddCube(2, 0, 0, CubeColor.Gray, cubePrefab);
+        MasterGrid.AddCube(-1, 0, 0, CubeColor.Gray, cubePrefab);
+        MasterGrid.AddCube(-2, 0, 0, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(0, 0, 0, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(1, 0, 0, CubeColor.Green, cubePrefab);
+        MasterGrid.AddCube(2, 0, 0, CubeColor.Gray, cubePrefab);
 
-        //MasterGrid.AddCube(0, 1, 0, CubeColor.Blue, cubePrefab);
-        //MasterGrid.AddCube(-1, 1, 0, CubeColor.Blue, cubePrefab);
-        //MasterGrid.AddCube(-2, 1, 0, CubeColor.Red, cubePrefab);
-        //MasterGrid.AddCube(1, 1, 0, CubeColor.Gray, cubePrefab);
-        //MasterGrid.AddCube(2, 1, 0, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(-1, 1, 0, CubeColor.Blue, cubePrefab);
+        MasterGrid.AddCube(-2, 1, 0, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(0, 1, 0, CubeColor.Blue, cubePrefab);
+        MasterGrid.AddCube(1, 1, 0, CubeColor.Gray, cubePrefab);
+        MasterGrid.AddCube(2, 1, 0, CubeColor.Red, cubePrefab);
 
-        //MasterGrid.AddCube(0, 2, 0, CubeColor.Green, cubePrefab);
-        //MasterGrid.AddCube(-1, 2, 0, CubeColor.Red, cubePrefab);
-        //MasterGrid.AddCube(-2, 2, 0, CubeColor.Blue, cubePrefab);
-        //MasterGrid.AddCube(1, 2, 0, CubeColor.Green, cubePrefab);
-        //MasterGrid.AddCube(2, 2, 0, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(-1, 2, 0, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(-2, 2, 0, CubeColor.Blue, cubePrefab);
+        MasterGrid.AddCube(0, 2, 0, CubeColor.Green, cubePrefab);
+        MasterGrid.AddCube(1, 2, 0, CubeColor.Green, cubePrefab);
+        MasterGrid.AddCube(2, 2, 0, CubeColor.Red, cubePrefab);
+
+        MasterGrid.AddCube(-1, 3, 0, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(-2, 3, 0, CubeColor.Gray, cubePrefab);
+        MasterGrid.AddCube(0, 3, 0, CubeColor.Gray, cubePrefab);
+        MasterGrid.AddCube(1, 3, 0, CubeColor.Green, cubePrefab);
+        MasterGrid.AddCube(2, 3, 0, CubeColor.Gray, cubePrefab);
+
     }
 
     void Update() {
@@ -232,7 +233,12 @@ public class GameController : MonoBehaviour
                     GameObject cube = hit.transform.gameObject;
                     UpdateSelectedCubeArray(cube);
                     if (selectedCubes.Count == 2) {
-                        StartMove();
+                        // are these cubes right next to each other?
+                        if (MasterGrid.CubesAreAdjacent(selectedCubes[0], selectedCubes[1])) {
+                            StartMove();
+                        } else {
+                            CancelSelectedCubes();
+                        }
                     }
                 }
             } else if (Input.GetMouseButtonUp(0)) {

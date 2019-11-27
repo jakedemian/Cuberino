@@ -29,12 +29,12 @@ public static class MasterGrid
         return pos.x.ToString() + "," + pos.y.ToString() + "," + pos.z.ToString();
     }
 
-    private static Vector3 MapKeyToVector(string key) {
-        Vector3 res = Vector3.zero;
+    private static Vector3Int MapKeyToVector(string key) {
+        Vector3Int res = Vector3Int.zero;
 
         string[] points = key.Split(',');
 
-        res = new Vector3(int.Parse(points[0]), int.Parse(points[1]), int.Parse(points[2]));
+        res = new Vector3Int(int.Parse(points[0]), int.Parse(points[1]), int.Parse(points[2]));
 
         return res;
     }
@@ -63,8 +63,8 @@ public static class MasterGrid
         return newCube;
     }
 
-    public static Vector3 GetCubeGridPosition(GameObject cube) {
-        Vector3 res = Vector3.zero;
+    public static Vector3Int GetCubeGridPosition(GameObject cube) {
+        Vector3Int res = Vector3Int.zero;
 
         foreach(var item in masterGrid) {
             if(item.Value.GetInstanceID() == cube.GetInstanceID()) {
@@ -147,7 +147,7 @@ public static class MasterGrid
         masterGrid = masterGridCopy;
     }
 
-    private static bool CubesAreAdjacent(GameObject cube1, GameObject cube2) {
+    public static bool CubesAreAdjacent(GameObject cube1, GameObject cube2) {
         bool adjacent = false;
 
         Vector3Int cube1GridPos = Vector3Int.RoundToInt(cube1.transform.position);
