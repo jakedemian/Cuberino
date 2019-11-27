@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    Vector3 currentFocusPoint = Vector3.zero;
-    float currentFOV = 60f;
-    Vector3 cameraOffset;
-    private bool cameraIsRotating = true;
+    private Vector3 currentFocusPoint = Vector3.zero;
+    private float currentFOV = 60f;
+    private Vector3 cameraOffset;
+    private bool cameraIsActive = false;
+    private bool camIsRotating = false;
+    private Coroutine rotateCoroutine;
 
-    public float rotationSpeed = 5f;
     public float smoothFactor = 0.5f;
 
     void Start(){
@@ -19,19 +20,44 @@ public class CameraController : MonoBehaviour
     }
 
     private void LateUpdate() {
-        if (cameraIsRotating) {
-            Quaternion camTurnAngle =
-                Quaternion.AngleAxis(Input.GetAxis("Mouse X") * rotationSpeed, Vector3.up);
-
-            cameraOffset = camTurnAngle * cameraOffset;
-
+        if (cameraIsActive && !camIsRotating) {
+            currentFocusPoint = new Vector3(currentFocusPoint.x, Mathf.Max(currentFocusPoint.y + Input.GetAxis("Mouse Y"),0f), currentFocusPoint.z);
             Vector3 newPos = currentFocusPoint + cameraOffset;
             transform.position = Vector3.Slerp(transform.position, newPos, smoothFactor);
             transform.LookAt(currentFocusPoint);
         }
     }
 
-    public void IsCameraActive(bool isCamActive) {
-        cameraIsRotating = isCamActive;
+    private IEnumerator RotateCam(float rotateDuration) {
+        camIsRotating = true;
+        float timeLeft = rotateDuration;
+
+
+        while (timeLeft > 0) {
+            yield return null;
+
+            float elapsedRotationTime = Mathf.Min(timeLeft, Time.deltaTime);
+            float angleThisFrame = 180f * elapsedRotationTime / rotateDuration;
+
+            Quaternion camTurnAngle = Quaternion.AngleAxis(angleThisFrame, Vector3.up);
+
+            this.cameraOffset = camTurnAngle * this.cameraOffset;
+            transform.position = this.currentFocusPoint + this.cameraOffset;
+            transform.LookAt(this.currentFocusPoint);
+
+            timeLeft -= Time.deltaTime;
+        }
+
+        camIsRotating = false;
+    }
+
+    public void RotateCamera() {
+        if (!camIsRotating) {
+            this.rotateCoroutine = StartCoroutine(RotateCam(0.2f));
+        }
+    }
+
+    public void SetCameraActive(bool isCamActive) {
+        cameraIsActive = isCamActive;
     }
 }

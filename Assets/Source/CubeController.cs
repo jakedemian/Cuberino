@@ -29,6 +29,7 @@ public class CubeController : MonoBehaviour {
     public Material greenMaterial;
     public Material blueMaterial;
     public Material grayMaterial;
+    public Material whiteMaterial;
     public Material selectedMaterial;
 
     public float moveAnimationTime;
@@ -50,6 +51,8 @@ public class CubeController : MonoBehaviour {
             GetComponent<Renderer>().sharedMaterial = blueMaterial;
         } else if(color == CubeColor.Gray) {
             GetComponent<Renderer>().sharedMaterial = grayMaterial;
+        } else if(color == CubeColor.White) {
+            GetComponent<Renderer>().sharedMaterial = whiteMaterial;
         }
     }
 

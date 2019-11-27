@@ -16,7 +16,7 @@ public class GameController : MonoBehaviour
         if (inputState == InputState.Game) {
             // TODO unsub from UI
             // unsub from cam
-            Camera.main.GetComponent<CameraController>().IsCameraActive(false);
+            Camera.main.GetComponent<CameraController>().SetCameraActive(false);
 
             // TODO sub to game
         } else if (inputState == InputState.Camera) {
@@ -24,11 +24,11 @@ public class GameController : MonoBehaviour
             // TODO unsub from UI
 
             // connect to camera
-            Camera.main.GetComponent<CameraController>().IsCameraActive(true);
+            Camera.main.GetComponent<CameraController>().SetCameraActive(true);
         } else if (inputState == InputState.UI) {
             // TODO unsub from game
             // unsub from cam
-            Camera.main.GetComponent<CameraController>().IsCameraActive(false);
+            Camera.main.GetComponent<CameraController>().SetCameraActive(false);
 
             // TODO connect to UI
 
@@ -190,10 +190,9 @@ public class GameController : MonoBehaviour
     }
 
     void Start(){
-        // 5x3 test wall ////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////
+        //front
         MasterGrid.AddCube(-1, 0, 0, CubeColor.Gray, cubePrefab);
-        MasterGrid.AddCube(-2, 0, 0, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(-2, 0, 0, CubeColor.White, cubePrefab);
         MasterGrid.AddCube(0, 0, 0, CubeColor.Red, cubePrefab);
         MasterGrid.AddCube(1, 0, 0, CubeColor.Green, cubePrefab);
         MasterGrid.AddCube(2, 0, 0, CubeColor.Gray, cubePrefab);
@@ -205,7 +204,7 @@ public class GameController : MonoBehaviour
         MasterGrid.AddCube(2, 1, 0, CubeColor.Red, cubePrefab);
 
         MasterGrid.AddCube(-1, 2, 0, CubeColor.Red, cubePrefab);
-        MasterGrid.AddCube(-2, 2, 0, CubeColor.Blue, cubePrefab);
+        MasterGrid.AddCube(-2, 2, 0, CubeColor.White, cubePrefab);
         MasterGrid.AddCube(0, 2, 0, CubeColor.Green, cubePrefab);
         MasterGrid.AddCube(1, 2, 0, CubeColor.Green, cubePrefab);
         MasterGrid.AddCube(2, 2, 0, CubeColor.Red, cubePrefab);
@@ -213,8 +212,45 @@ public class GameController : MonoBehaviour
         MasterGrid.AddCube(-1, 3, 0, CubeColor.Red, cubePrefab);
         MasterGrid.AddCube(-2, 3, 0, CubeColor.Gray, cubePrefab);
         MasterGrid.AddCube(0, 3, 0, CubeColor.Gray, cubePrefab);
-        MasterGrid.AddCube(1, 3, 0, CubeColor.Green, cubePrefab);
+        MasterGrid.AddCube(1, 3, 0, CubeColor.Red, cubePrefab);
         MasterGrid.AddCube(2, 3, 0, CubeColor.Gray, cubePrefab);
+
+        MasterGrid.AddCube(-1, 4, 0, CubeColor.Gray, cubePrefab);
+        MasterGrid.AddCube(-2, 4, 0, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(0, 4, 0, CubeColor.White, cubePrefab);
+        MasterGrid.AddCube(1, 4, 0, CubeColor.Green, cubePrefab);
+        MasterGrid.AddCube(2, 4, 0, CubeColor.Red, cubePrefab);
+
+        //back
+        MasterGrid.AddCube(-1, 0, 1, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(-2, 0, 1, CubeColor.Blue, cubePrefab);
+        MasterGrid.AddCube(0, 0, 1, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(1, 0, 1, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(2, 0, 1, CubeColor.Gray, cubePrefab);
+
+        MasterGrid.AddCube(-1, 1, 1, CubeColor.White, cubePrefab);
+        MasterGrid.AddCube(-2, 1, 1, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(0, 1, 1, CubeColor.Green, cubePrefab);
+        MasterGrid.AddCube(1, 1, 1, CubeColor.Gray, cubePrefab);
+        MasterGrid.AddCube(2, 1, 1, CubeColor.Red, cubePrefab);
+
+        MasterGrid.AddCube(-1, 2, 1, CubeColor.Red, cubePrefab);
+        MasterGrid.AddCube(-2, 2, 1, CubeColor.Green, cubePrefab);
+        MasterGrid.AddCube(0, 2, 1, CubeColor.White, cubePrefab);
+        MasterGrid.AddCube(1, 2, 1, CubeColor.Blue, cubePrefab);
+        MasterGrid.AddCube(2, 2, 1, CubeColor.Blue, cubePrefab);
+
+        MasterGrid.AddCube(-1, 3, 1, CubeColor.Blue, cubePrefab);
+        MasterGrid.AddCube(-2, 3, 1, CubeColor.Gray, cubePrefab);
+        MasterGrid.AddCube(0, 3, 1, CubeColor.Gray, cubePrefab);
+        MasterGrid.AddCube(1, 3, 1, CubeColor.Green, cubePrefab);
+        MasterGrid.AddCube(2, 3, 1, CubeColor.Blue, cubePrefab);
+
+        MasterGrid.AddCube(-1, 4, 1, CubeColor.Gray, cubePrefab);
+        MasterGrid.AddCube(-2, 4, 1, CubeColor.White, cubePrefab);
+        MasterGrid.AddCube(0, 4, 1, CubeColor.Green, cubePrefab);
+        MasterGrid.AddCube(1, 4, 1, CubeColor.White, cubePrefab);
+        MasterGrid.AddCube(2, 4, 1, CubeColor.Red, cubePrefab);
 
     }
 

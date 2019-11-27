@@ -2,6 +2,6 @@
 using System.Collections.Generic;
 
 public enum InputState { Camera, Game, UI };
-public enum CubeColor { Red, Green, Blue, Gray };
+public enum CubeColor { Red, Green, Blue, Gray, White };
 
 //public class Globals : MonoBehaviour {}
